@@ -1,7 +1,5 @@
 import pygame, sys, random
 import time
-from pygame.locals import *
-
 
 
 def flip(player):
@@ -15,6 +13,27 @@ def flip(player):
         player = pygame.transform.flip(player,True, False)
 
         return player
+
+def boundaries(player, grass_block, width, height):
+
+    if player.left <= 0:
+        player.left += 10
+    if player.right >= width-32:
+        player.right -= 10
+    if player.top <= 0:
+        player.top += 10
+    if player.bottom >= height:
+        player.bottom -= 10
+    
+    if player.colliderect(grass_block):
+        if grass_block.collidepoint((player.left, player.bottom - v)) and grass_block.collidepoint((player.centerx, player.bottom - v)) or grass_block.collidepoint((player.centerx, player.bottom - v)) and grass_block.collidepoint((player.right, player.bottom - v)):
+            player.bottom = grass_block.top - 1
+        elif grass_block.collidepoint(player.topleft) and grass_block.collidepoint(player.midtop) or grass_block.collidepoint(player.midtop) and grass_block.collidepoint(player.topright):
+            player.top = grass_block.bottom + 1
+        elif grass_block.collidepoint(player.topleft) and grass_block.collidepoint(player.midleft) or grass_block.collidepoint(player.midleft) and grass_block.collidepoint(player.bottomleft):
+            player.left = grass_block.right + 2
+        elif grass_block.collidepoint(player.topright) and grass_block.collidepoint(player.midright) or grass_block.collidepoint(player.midright) and grass_block.collidepoint(player.bottomright):
+            player.right = grass_block.left - 2
 
 
     
@@ -81,10 +100,6 @@ def runningplayer_generator():
         running_player[i] = pygame.transform.scale(running_player[i], (64, 64))
 
     return running_player
-        
-def generate_platform():
-    global my_spritesheetTERRAIN
-    my_spritesheetTERRAIN = Spritesheet('2d_platformer_game_work/Free/Terrain/Terrain (16x16).png')
 
 def generate_background():
     background = pygame.image.load('2d_platformer_game_work/Free/Background/Brown.png').convert()
@@ -97,6 +112,106 @@ def paste_background(b):
         for i in range(22):
             i = i*64
             screen.blit(b, (i, j))
+        
+def generate_platform():
+    global my_spritesheetTERRAIN
+    my_spritesheetTERRAIN = Spritesheet('2d_platformer_game_work/Free/Terrain/Terrain (16x16).png')
+
+def terrains():
+    global grass_block, grass_block_rect, grass_block_large, grass_block_large_rect, dirt_block, dirt_block_rect, max
+    max = 10
+     # one block
+    grass_block = my_spritesheetTERRAIN.get_sprite(96,0,48, 48)
+    grass_block = pygame.transform.scale(grass_block, (144, 144))
+    grass_block_rect = []
+    for i in range(max):
+        grass_block_rect.append(grass_block.get_rect(center = (140,567)))
+
+
+    """ size = 44
+    grass_block_large = my_spritesheetTERRAIN.get_sprite(98,2,size, size)
+    grass_block_large = pygame.transform.scale(grass_block_large, (size*3, size*3))
+    grass_block_large_rect = []
+
+    size1 = 5
+    for i in range(size1):
+        grass_block_large_rect.append(grass_block_large.get_rect(center = (size*3/2,567)))
+    
+    for i in range(len(grass_block_large_rect) - 1):
+        grass_block_large_rect[i+1].centerx = grass_block_large_rect[i].centerx + (size*3)
+        grass_block_large_rect[i+1].centery = grass_block_large_rect[i].centery """
+
+
+
+    """ dirt_block = my_spritesheetTERRAIN.get_sprite(96,32,48, 16)
+    dirt_block = pygame.transform.scale(dirt_block, (144, 48))
+    dirt_block_rect = dirt_block.get_rect(center = (500,615))
+
+    grass_block = my_spritesheetTERRAIN.get_sprite(96,0,48, 16)
+    grass_block = pygame.transform.scale(grass_block, (144, 48))
+    grass_block_rect = grass_block.get_rect(center = (500,567)) """
+
+def check_collision():
+    if player_rect.bottom >= ground_level[0] and player_rect.bottom <= ground_level[0] + 11:
+        if player_rect.right >= ground_level[1].left + 15 and player_rect.left <= ground_level[1].right - 15:
+            return True
+        else:
+            return False
+
+def ground_levelgg():
+    ontop = False
+    for i in range(len(grass_block_rect)):
+        if player_rect.bottom >= grass_block_rect[i].top-1 and player_rect.bottom <= grass_block_rect[i].bottom:
+            if player_rect.right >= grass_block_rect[i].left + 5 and player_rect.left <= grass_block_rect[i].right - 5:
+                ontop = True
+                return grass_block_rect[i]
+    
+    if ontop == False:
+        return ground_level[1]
+
+def move_grass_block():
+
+    if left_down:
+        for i in range(len(grass_block_rect)):
+            grass_block_rect[i].centerx += 10
+
+    elif right_down:
+        for i in range(len(grass_block_rect)):
+            grass_block_rect[i].centerx -= 10
+
+
+    # if grass_block_rect[0].left <= 0:
+    #     grass_block_rect.append(grass_block.get_rect(center = (grass_block_rect[len(grass_block_rect)-1].centerx + 280, grass_block_rect[0].centery)))
+    
+
+    
+    return grass_block_rect
+
+def re_do_grass_blocks():
+
+    grass_block_rect.clear()
+    for i in range(max):
+        grass_block_rect.append(grass_block.get_rect(center = (140,567)))
+
+    
+    for i in range(max-1):
+        grass_block_rect[i+1].centerx = grass_block_rect[i].centerx + 280
+        grass_block_rect[i+1].centery = grass_block_rect[i].centery -50
+
+
+    
+
+# initialise the pygame
+# pygame.mixer.pre_init(frequency = 44100, size = 16, channels = 1, buffer = 512)
+pygame.init()
+
+SCREENWIDTH = 1400
+SCREENHEIGHT = 700
+#creating the screen (width by height)
+screen = pygame.display.set_mode((SCREENWIDTH, SCREENHEIGHT))
+
+# creates clock
+clock = pygame.time.Clock()
 
 class Spritesheet:
 
@@ -112,360 +227,216 @@ class Spritesheet:
         return sprite
 
 
-pygame.init()
-clock = pygame.time.Clock()
-
-screen_width = 1440
-screen_height = 704
-
-screen = pygame.display.set_mode((screen_width, screen_height))
-pygame.display.set_caption('2d Platformer')
-
-# background
-background = generate_background()
-
-
-# WORLD 
-my_spritesheetTERRAIN = Spritesheet('2d_platformer_game_work/Free/Terrain/Terrain (16x16).png')
-
-# background
-tile_size = 96
-decorator = 0 # 0,64, 128
-
-
-class Player():
-    def __init__(self, x, y):
-    
-        #generate players
-        generate_character()
-        self.player = player_generator()
-        self.player_rect = self.player[0].get_rect(center = (0, 0))
-        self.running_player = runningplayer_generator()
-        self.player_rect.centerx = x
-        self.player_rect.centery = y
-
-        # game variables
-        self.stop = True
-
-        self.playerX_change = 0
-        self.left_down = False
-        self.right_down = False
-
-        self.direction = 'right'
-        self.jump = False
-        self.falling = False
-        self.doublejump = False
-        self.gravity = 5
-        self.v = -30
-
-        self.number = 0
-        self.player_num = 0
-        self.player_movement = 0
-
-        self.num = 0
-        self.double_jump_times = 0
-        self.num_jump = 0
-        self.jumping = True
-
-
-
-
-    def update(self, up_down, left, right, space):
-
-        if up_down: #checks if any key is held down
-            if left:
-                self.left_down=True
-                self.playerX_change = -10
-                if self.direction != 'left':
-                    self.running_player = flip(self.running_player)
-                    self.player = flip(self.player)
-                self.direction = 'left'
-            if right:
-                self.right_down=True
-                self.playerX_change = 10
-                if self.direction != 'right':
-                    self.running_player = flip(self.running_player)
-                    self.player = flip(self.player)
-                self.direction = 'right'
-                #double jump
-            if space and self.num_jump == 1 and self.doublejump == False and self.double_jump_times == 0 and self.jumping == True:
-                self.falling = False
-                self.doublejump = True
-                self.jump = False
-                self.number = 3
-                self.player_movement = self.v
-                self.double_jump_times = 1
-                #normal jump
-            elif space and self.jump == False and self.doublejump == False and self.double_jump_times == 0 and self.jumping == True:
-                self.falling = False
-                self.player_num = 1
-                self.jump = True
-                self.player_movement = self.v
-                self.num_jump = 1
-            
-            if space:
-                self.jumping = False
-
-            
-
-            
-        if up_down == False:
-            if left == False:
-                if not self.right_down and self.stop:
-                    self.playerX_change = 0
-                self.left_down=False
-
-            if right == False:
-                if not self.left_down and self.stop:
-                    self.playerX_change = 0
-                self.right_down=False
-    
-    
-        #jumping
-        if self.jump:
-            if self.player_movement >= 0:
-                self.jump = False
-                self.falling = True
-            else:
-                self.player_rect.centery += self.player_movement 
-                self.player_movement += self.gravity
-
-        elif self.doublejump:        
-            if self.player_movement >= 0:
-                self.doublejump = False
-                self.falling = True
-            else:
-                self.player_rect.centery += self.player_movement 
-                self.player_movement += self.gravity
-                self.number += 1
-                self.player_num = number_check(self.number)
-
-        if self.falling == True:
-            self.player_num = 2
-            self.player_movement -= self.gravity
-            self.player_rect.centery -= self.player_movement
-
-
-        #draw player
-        if self.left_down or self.right_down:
-            self.num += 1
-            self.stop = False
-
-            if self.num > 11:
-                self.num = 0
-
-            if self.player_rect.centerx >= 700 or self.player_rect.centerx <= 700:
-                self.player_rect.centerx += self.playerX_change
-            if self.jump == False and self.doublejump == False:
-                screen.blit(self.running_player[self.num], self.player_rect)
-            else:
-                screen.blit(self.player[self.player_num], self.player_rect)
-
-        else:
-            screen.blit(self.player[self.player_num], self.player_rect)
-
-
-class World():
-
-    def __init__(self, data):
-        self.tile_list = []
-
-        #load images
-        stone_block = my_spritesheetTERRAIN.get_sprite(192,decorator+16,48,48)
-        stone_blockTOP = my_spritesheetTERRAIN.get_sprite(192,decorator,48,16)
-        stone_blockSIDE = my_spritesheetTERRAIN.get_sprite(240,decorator,16,48)
-        
-
-        row_count = 0
-        corner_count = 0
-        side_count = 0
-        for row in data:
-            col_count = 0
-            side_count = 0
-            for tile in row:
-                if tile == 1:
-                    img = pygame.transform.scale(stone_block, (96,96))
-
-                    if corner_count == 0:
-                        img = pygame.transform.flip(img, True, False)
-                        img_rect = img.get_rect()
-                        img_rect.x = col_count * tile_size
-                        img_rect.y = row_count * tile_size 
-                    if corner_count == 1:
-                        img_rect = img.get_rect()
-                        img_rect.x = col_count * tile_size 
-                        img_rect.y = row_count * tile_size 
-                    elif corner_count == 2:
-                        img = pygame.transform.flip(img, True, True)
-                        img_rect = img.get_rect()
-                        img_rect.x = col_count * tile_size
-                        img_rect.y = row_count * tile_size - 64
-                    elif corner_count == 3:
-                        img = pygame.transform.flip(img, False, True)
-                        img_rect = img.get_rect()
-                        img_rect.x = col_count * tile_size
-                        img_rect.y = row_count * tile_size - 64
-
-                    tile = (img, img_rect)
-                    self.tile_list.append(tile)
-                    corner_count +=1
-
-                if tile == 2:
-                    img = pygame.transform.scale(stone_blockTOP, (96,32))
-                    img_rect = img.get_rect()
-                    img_rect.x = col_count * tile_size 
-                    img_rect.y = row_count * tile_size 
-                    tile = (img, img_rect)
-                    self.tile_list.append(tile)
-                
-                if tile == 3:
-                    img = pygame.transform.scale(stone_blockSIDE, (32,96))
-                    img_rect = img.get_rect()
-                    if side_count == 1:
-                        img_rect.x = col_count * tile_size - 32
-                    else:
-                        img_rect.x = col_count * tile_size 
-                    img_rect.y = row_count * tile_size - 32
-                    tile = (img, img_rect)
-                    self.tile_list.append(tile)
-                    side_count = 1
-
-
-                col_count += 1
-            row_count += 1
-    
-    def draw(self):
-        for tile in self.tile_list:
-            screen.blit(tile[0], tile[1])
-
-world_data = [
-[1,2,2,2,2,2,2,2,2,2,2,2,2,2,1],
-[3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3],
-[3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3],
-[3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3],
-[3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3],
-[3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3],
-[3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3],
-[1,2,2,2,2,2,2,2,2,2,2,2,2,2,1],
-]
-
-world = World(world_data)
 
 # terrain
-class World_terrain():
-    def __init__(self, data):
-        self.tile_list = []
+generate_platform()
+background = generate_background()
+terrains()
 
-        #load images
-        grass_block = my_spritesheetTERRAIN.get_sprite(98,1,44, 44)
+for i in range(len(grass_block_rect) - 1):
+    grass_block_rect[i+1].centerx = grass_block_rect[i].centerx + 280
+    grass_block_rect[i+1].centery = grass_block_rect[i].centery - 20
+
+
+
+
+# get character images
+
+generate_character()
+
+player = player_generator()
+player_rect = player[0].get_rect(center = (140,grass_block_rect[0].top-200))
+running_player = runningplayer_generator()
+
+
+
+
+# game variable
+stop = True
+
+playerX_change = 0
+left_down = False
+right_down = False
+
+direction = 'right'
+jump = False
+falling = True
+doublejump = False
+gravity = 5
+v = -30
+
+number = 0
+player_num = 0
+player_movement = 0
+player_vel = -15
+ground_level = []
+ground_level.append(grass_block_rect[0].top - 1)
+ground_level.append(grass_block_rect[0])
+
+num = 0
+double_jump_times = 0
+num_jump = 0
+falling_jump = False
+add_block = False
+
+while True:
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            pygame.quit()
+            sys.exit() # shuts down game completely
         
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_LEFT:
+                left_down=True
+                if direction != 'left':
+                    running_player = flip(running_player)
+                    player = flip(player)
+                direction = 'left'
+            if event.key == pygame.K_RIGHT:
+                right_down=True
+                if direction != 'right':
+                    running_player = flip(running_player)
+                    player = flip(player)
+                direction = 'right'
 
-        row_count = 0
-        corner_count = 0
-        for row in data:
-            col_count = 0
-            for tile in row:
-                if tile == 2:
-                    img = pygame.transform.scale(grass_block, (144,144))
-                    if corner_count % 2 != 0:
-                        img = pygame.transform.flip(img, True, False)
-                    img_rect = img.get_rect()
-                    img_rect.x = col_count * 140 
-                    img_rect.y = row_count * 96
-                    tile = (img, img_rect)
-                    self.tile_list.append(tile)
-                    corner_count += 1
-
-                col_count += 1
-            row_count += 1
-    
-    def draw(self):
-        for tile in self.tile_list:
-            screen.blit(tile[0], tile[1])
-    
-    # move blocks
-    def move(self, x):
-        all_left=[]
-        all_right=[]
-        for tile in self.tile_list:
-            tile[1].centerx += x
-            all_left.append(tile[1].left)
-            all_right.append(tile[1].right)
-        minimum = min(all_left)
-        maximum = max(all_right)
-
-        if minimum >= 0:
-            for tile in self.tile_list:
-                tile[1].centerx -= 1
-
-        if maximum <= 1440:
-            for tile in self.tile_list:
-                tile[1].centerx += 1
-
+            if event.key == pygame.K_SPACE and num_jump == 1 and doublejump == False and double_jump_times == 0:
+                falling = False
+                doublejump = True
+                jump = False
+                number = 3
+                player_movement = v
+                double_jump_times = 1
             
-
-worldterrain_data = [
-[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-[2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2],
-]
-
-world_terrain = World_terrain(worldterrain_data)
-character = Player(300, 300)
-
-# moving commands
-up_down = None
-left=False
-right=False
-space=False
+            elif event.key == pygame.K_SPACE and jump == False and doublejump == False and double_jump_times == 0:
+                falling = False
+                player_num = 1
+                jump = True
+                player_movement = v
+                num_jump = 1
 
 
-run = True
-while run:
+        if event.type == pygame.KEYUP:
+            if event.key == pygame.K_LEFT:
+                if not right_down and stop:
+                    playerX_change = 0
+                left_down=False
+                flipping_time = False
+
+            if event.key == pygame.K_RIGHT:
+                if not left_down and stop:
+                    playerX_change = 0
+                right_down=False
+                flipping_time = False
+    
 
     paste_background(background)
 
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            run = False
+    if left_down:
+        if player_rect.centerx >= 700:
+            playerX_change = -10
+        elif grass_block_rect[0].left >= 68:
+            playerX_change = -10
+        else:
+            # move terrain
+            grass_block_rect = move_grass_block()
+            playerX_change = 0
+    elif right_down:
+        if grass_block_rect[9].right <= 1332:
+            playerX_change = 10
+        elif player_rect.centerx <= 700:
+            playerX_change = 10
+        else: 
+            # move terrain
+            grass_block_rect = move_grass_block()
+            playerX_change = 0
+    
 
-        if event.type == pygame.KEYDOWN:
-            up_down=True
-            if event.key == pygame.K_LEFT:
-                left=True
 
-                
-            if event.key == pygame.K_RIGHT:
-                right=True
+    #chooses ground_level
+    ground_level[1] = ground_levelgg()
+    ground_level[0] = ground_level[1].top - 1
+    
+    
+    #jumping
+    if jump:
+        if player_movement >= 0:
+            jump = False
+            falling = True
+        else:
+            player_rect.centery += player_movement 
+            player_movement += gravity
+            player_rect = boundaries(player_rect, ground_level[1], SCREENWIDTH, SCREENHEIGHT)
+
+    elif doublejump:        
+        if player_movement >= 0:
+            doublejump = False
+            falling = True
+        else:
+            player_rect.centery += player_movement 
+            player_movement += gravity
+            number += 1
+            player_num = number_check(number)
+            player_rect = boundaries(player_rect, ground_level[1], SCREENWIDTH, SCREENHEIGHT)
+
+        
+    if falling == True:
+        if check_collision() == True:
+            num_jump = 0
+            double_jump_times = 0
+            player_num = 0
+            player_movement = 0
             
-            if event.key == pygame.K_SPACE:
-                space=True
-
-        if event.type == pygame.KEYUP:
-            up_down=False
-            if event.key == pygame.K_LEFT:
-                left=False
-
-            if event.key == pygame.K_RIGHT:
-                right=False
-            
-            if event.key == pygame.K_SPACE:
-                space=False
+        else:
+            player_num = 2
+            player_movement -= gravity
+            player_rect.centery -= player_movement
 
 
-    world_terrain.draw()
-    world.draw()
-    character.update(up_down, left, right, space)
+
+
+    # respawn
+    if player_rect.top >= SCREENHEIGHT:
+        re_do_grass_blocks()
+        player_rect.bottom = ground_level[0] - 200
+        player_rect.centerx = grass_block_rect[0].centerx
+        player_movement = 0
+        player_num = 0
+        double_jump_times = 0
+        jump = False
+        doublejump = False
+
+
+    # running
+    player_rect = boundaries(player_rect, ground_level[1], SCREENWIDTH, SCREENHEIGHT)
+
+    if left_down or right_down:
+        num += 1
+        stop = False
+
+        if num > 11:
+            num = 0
+
+        if player_rect.centerx >= 700 or player_rect.centerx <= 700:
+            player_rect.centerx += playerX_change
+        if jump == False and doublejump == False and check_collision() == True:
+            screen.blit(running_player[num], player_rect)
+        else:
+            screen.blit(player[player_num], player_rect)
+
+    else:
+        screen.blit(player[player_num], player_rect)
+    
+    
+
+    
+
+    for i in range(len(grass_block_rect)):
+        screen.blit(grass_block, grass_block_rect[i])
+    
+
+
 
     time.sleep(0.05)
-    print(space)
 
     pygame.display.update()
     clock.tick(120) # frame rate - can run slower than this
-
-
-pygame.quit()

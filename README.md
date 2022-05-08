@@ -11,5 +11,5 @@ Pong:
 
 Snake.io:
 
-![image](https://user-images.githubusercontent.com/83513279/167296115-d1bbc0f0-40c7-4781-9953-5981c35401e8.png)
+![image](https://user-images.githubusercontent.com/83513279/167296302-3692205a-fa5d-4dd8-938e-ea96023d9949.png)
 

@@ -4,7 +4,7 @@ Utilising pygame, programmed three different games from scratch: a 2d platformer
 ## Libraries/Utilities
 - Coded with Python3
 - PyGame library
-- 
+  
 ## Screenshots
 
 2d platformer:

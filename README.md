@@ -1,4 +1,5 @@
-# pygame_videogame
+# About
+## Utilising pygame, programmed three different games from scratch: a 2d platformer, pong, and snake.io
 
 2d platformer:
 ![image](https://user-images.githubusercontent.com/83513279/167295853-f26b5ff5-231b-4679-950d-42d20daf2320.png)

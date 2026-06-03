@@ -13,17 +13,17 @@ Three games built from scratch in Python using Pygame, each with custom mechanic
 - Paddle momentum affects ball angle and speed
 - Score tracking
 
-Snake
+## Snake
 
 - Smooth body segment following with turn logic
 - Self-collision and boundary detection
 - Apple spawning avoids snake body and UI elements
 - Score and highscore tracking
 
-## Libraries/Utilities
+# Libraries/Utilities
 Built with: Python, Pygame, TensorFlow/Keras, OpenCV
   
-## Screenshots
+# Screenshots
 
 2d platformer:
 ![image](https://user-images.githubusercontent.com/83513279/167295853-f26b5ff5-231b-4679-950d-42d20daf2320.png)

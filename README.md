@@ -1,9 +1,27 @@
 # About
-Utilising pygame, programmed three different games from scratch: a 2d platformer, pong, and snake.io
+Three games built from scratch in Python using Pygame, each with custom mechanics and assets.
+
+## 2D Platformer
+- Spritesheet animation with 4 playable characters (randomly selected)
+- Double jump, fall, and idle states
+- Scrolling terrain with platform collision detection
+- Attempted real-time gesture control using a Keras/TensorFlow model and OpenCV webcam feed for character movement
+
+## Pong
+- Two player local multiplayer
+- Three difficulty levels (Easy / Medium / Hard) with toggle switches
+- Paddle momentum affects ball angle and speed
+- Score tracking
+
+Snake
+
+- Smooth body segment following with turn logic
+- Self-collision and boundary detection
+- Apple spawning avoids snake body and UI elements
+- Score and highscore tracking
 
 ## Libraries/Utilities
-- Coded with Python3
-- PyGame library
+Built with: Python, Pygame, TensorFlow/Keras, OpenCV
   
 ## Screenshots
 
